@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Prediction } from '@/types';
+import { Prediction, PredictionCategory } from '@/types';
 import { getHistory } from '@/lib/database';
 import PredictionCard from '@/components/features/PredictionCard';
-import { History, TrophyIcon, XCircle } from 'lucide-react';
+import { History, TrophyIcon, XCircle, Target, TrendingUp } from 'lucide-react';
+import { UserProfile } from '@/lib/auth';
 
-export default function HistoryPage() {
+interface HistoryPageProps {
+  userProfile: UserProfile;
+}
+
+export default function HistoryPage({ userProfile }: HistoryPageProps) {
   const [history, setHistory] = useState<Prediction[]>([]);
-  const [filter, setFilter] = useState<'all' | 'won' | 'lost'>('all');
+  const [resultFilter, setResultFilter] = useState<'all' | 'won' | 'lost'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<PredictionCategory | 'ALL' | 'FREE' | 'VIP'>('ALL');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,9 +25,27 @@ export default function HistoryPage() {
     setLoading(false);
   };
 
+  const categories: Array<{ id: PredictionCategory | 'ALL' | 'FREE' | 'VIP'; label: string; icon: any }> = [
+    { id: 'ALL', label: 'Toutes', icon: History },
+    { id: 'FREE', label: 'FREE', icon: Target },
+    { id: 'COTE_2_FREE', label: 'Côte 2 Free', icon: Target },
+    { id: 'ACCUMULATION_FREE', label: 'Accumulation', icon: TrendingUp },
+    { id: 'VIP', label: 'VIP', icon: TrophyIcon },
+    { id: 'COTE_2_VIP', label: 'Côte 2 VIP', icon: Target },
+    { id: 'COTE_5_VIP', label: 'Côte 5 VIP', icon: TrophyIcon },
+    { id: 'SCORE_EXACT_VIP', label: 'Score Exact', icon: Target },
+    { id: 'HT_FT_VIP', label: 'HT/FT', icon: TrendingUp },
+  ];
+
   const filteredHistory = history.filter(p => {
-    if (filter === 'all') return true;
-    return p.status === filter;
+    // Filter by result
+    if (resultFilter !== 'all' && p.status !== resultFilter) return false;
+    
+    // Filter by category
+    if (categoryFilter === 'ALL') return true;
+    if (categoryFilter === 'FREE') return !p.category.includes('VIP');
+    if (categoryFilter === 'VIP') return p.category.includes('VIP');
+    return p.category === categoryFilter;
   });
 
   const stats = {
@@ -30,26 +54,33 @@ export default function HistoryPage() {
     lost: history.filter(p => p.status === 'lost').length,
   };
 
+  const categoryStats = {
+    total: filteredHistory.length,
+    won: filteredHistory.filter(p => p.status === 'won').length,
+    lost: filteredHistory.filter(p => p.status === 'lost').length,
+  };
+
   const winRate = stats.total > 0 ? ((stats.won / stats.total) * 100).toFixed(1) : 0;
+  const categoryWinRate = categoryStats.total > 0 ? ((categoryStats.won / categoryStats.total) * 100).toFixed(1) : 0;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
-          Historique
+          Historique des Pronostics
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Consultez les résultats de nos pronostics passés
+          Consultez les résultats de nos pronostics passés par section
         </p>
       </div>
 
-      {/* Stats */}
+      {/* Global Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="card p-6">
           <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
             {stats.total}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Global</div>
         </div>
         <div className="card p-6">
           <div className="text-2xl font-bold text-green-600 mb-1">
@@ -67,45 +98,97 @@ export default function HistoryPage() {
           <div className="text-2xl font-bold text-primary-600 dark:text-primary-400 mb-1">
             {winRate}%
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Taux de réussite</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Taux Global</div>
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex gap-2 mb-8">
-        <button
-          onClick={() => setFilter('all')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
-            filter === 'all'
-              ? 'bg-primary-500 text-white'
-              : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          <History className="w-4 h-4" />
-          Tous
-        </button>
-        <button
-          onClick={() => setFilter('won')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
-            filter === 'won'
-              ? 'bg-green-500 text-white'
-              : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          <TrophyIcon className="w-4 h-4" />
-          Gagnés
-        </button>
-        <button
-          onClick={() => setFilter('lost')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
-            filter === 'lost'
-              ? 'bg-red-500 text-white'
-              : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          <XCircle className="w-4 h-4" />
-          Perdus
-        </button>
+      {/* Category Filter */}
+      <div className="mb-6">
+        <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Filtrer par section</h3>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            const isActive = categoryFilter === cat.id;
+            
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryFilter(cat.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg whitespace-nowrap font-semibold transition-all ${
+                  isActive
+                    ? 'bg-primary-500 text-white shadow-lg'
+                    : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700 border border-gray-200 dark:border-dark-700'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Category Stats */}
+      {categoryFilter !== 'ALL' && (
+        <div className="card p-6 mb-6">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            Statistiques - {categories.find(c => c.id === categoryFilter)?.label}
+          </h3>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <div className="text-xl font-bold text-gray-900 dark:text-white">{categoryStats.total}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-green-600">{categoryStats.won} gagnés</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{categoryStats.lost} perdus</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-primary-600 dark:text-primary-400">{categoryWinRate}%</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Taux de réussite</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Result Filter */}
+      <div className="mb-6">
+        <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Filtrer par résultat</h3>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setResultFilter('all')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+              resultFilter === 'all'
+                ? 'bg-primary-500 text-white'
+                : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            <History className="w-4 h-4" />
+            Tous
+          </button>
+          <button
+            onClick={() => setResultFilter('won')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+              resultFilter === 'won'
+                ? 'bg-green-500 text-white'
+                : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            <TrophyIcon className="w-4 h-4" />
+            Gagnés
+          </button>
+          <button
+            onClick={() => setResultFilter('lost')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+              resultFilter === 'lost'
+                ? 'bg-red-500 text-white'
+                : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            <XCircle className="w-4 h-4" />
+            Perdus
+          </button>
+        </div>
       </div>
 
       {/* History Grid */}
@@ -125,6 +208,11 @@ export default function HistoryPage() {
           <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Aucun historique disponible
           </h3>
+          <p className="text-gray-500 dark:text-gray-400">
+            {categoryFilter !== 'ALL' 
+              ? `Aucun pronostic dans la section ${categories.find(c => c.id === categoryFilter)?.label}`
+              : 'Aucun pronostic dans l\'historique'}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

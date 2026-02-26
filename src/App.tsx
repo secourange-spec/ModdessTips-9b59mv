@@ -13,6 +13,7 @@ import Header from '@/components/layout/Header';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import NotificationCenter from '@/components/features/NotificationCenter';
 import { Page } from '@/types';
+import { Target, Crown, Trophy } from 'lucide-react';
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -67,7 +68,7 @@ function App() {
       case 'predictions':
         return <PredictionsPage userProfile={userProfile} />;
       case 'history':
-        return <HistoryPage />;
+        return <HistoryPage userProfile={userProfile} />;
       case 'vip-pricing':
         return <VIPPricingPage />;
       case 'profile':
@@ -90,9 +91,48 @@ function App() {
         onToggleDarkMode={() => setDarkMode(!darkMode)}
       />
       
-      <main className="pt-20">
+      <main className="pt-20 pb-24">
         {renderPage()}
       </main>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-800 shadow-2xl z-40">
+        <div className="grid grid-cols-3 max-w-md mx-auto">
+          <button
+            onClick={() => setCurrentPage('predictions')}
+            className={`flex flex-col items-center justify-center py-3 transition-colors ${
+              currentPage === 'predictions'
+                ? 'text-green-500'
+                : 'text-gray-600 dark:text-gray-400 hover:text-green-500'
+            }`}
+          >
+            <Target className="w-6 h-6 mb-1" />
+            <span className="text-xs font-semibold">FREE</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage('predictions')}
+            className={`flex flex-col items-center justify-center py-3 transition-colors ${
+              currentPage === 'predictions'
+                ? 'text-primary-500'
+                : 'text-gray-600 dark:text-gray-400 hover:text-primary-500'
+            }`}
+          >
+            <Crown className="w-6 h-6 mb-1" />
+            <span className="text-xs font-semibold">VIP</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage('history')}
+            className={`flex flex-col items-center justify-center py-3 transition-colors ${
+              currentPage === 'history'
+                ? 'text-primary-500'
+                : 'text-gray-600 dark:text-gray-400 hover:text-primary-500'
+            }`}
+          >
+            <Trophy className="w-6 h-6 mb-1" />
+            <span className="text-xs font-semibold">HISTORIQUES</span>
+          </button>
+        </div>
+      </nav>
 
       {currentUser && <NotificationCenter userId={currentUser.uid} />}
     </div>

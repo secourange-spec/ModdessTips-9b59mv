@@ -20,28 +20,8 @@ export default function Header({ userProfile, currentPage, onNavigate, onSignOut
       title: 'Menu Principal',
       items: [
         { id: 'home' as Page, label: 'Accueil', icon: Home },
-        { id: 'history' as Page, label: 'Historique', icon: History },
         { id: 'profile' as Page, label: 'Profil', icon: User },
-      ]
-    },
-    {
-      title: 'Pronostics FREE',
-      badge: 'FREE',
-      badgeColor: 'bg-green-500',
-      items: [
-        { id: 'predictions' as Page, label: 'Côte 2 Free', icon: Target, category: 'FREE' },
-        { id: 'predictions' as Page, label: 'Accumulation', icon: TrendingUp, category: 'FREE' },
-      ]
-    },
-    {
-      title: 'Pronostics VIP',
-      badge: 'VIP',
-      badgeColor: 'bg-gradient-to-r from-yellow-400 to-primary-500',
-      items: [
         { id: 'vip-pricing' as Page, label: 'Passer VIP', icon: Crown },
-        { id: 'predictions' as Page, label: 'Côte 2 VIP', icon: Target, vipOnly: true },
-        { id: 'predictions' as Page, label: 'Côte 5 VIP', icon: BarChart3, vipOnly: true },
-        { id: 'predictions' as Page, label: 'Score Exact', icon: Trophy, vipOnly: true },
       ]
     },
   ];
