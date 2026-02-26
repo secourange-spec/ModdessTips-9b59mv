@@ -5,11 +5,14 @@ import { Bell, X, CheckCircle, Info, AlertTriangle, Trophy } from 'lucide-react'
 
 interface NotificationCenterProps {
   userId: string;
+  onTogglePanel?: () => void;
+  isOpen?: boolean;
 }
 
-export default function NotificationCenter({ userId }: NotificationCenterProps) {
+export default function NotificationCenter({ userId, onTogglePanel, isOpen: externalIsOpen }: NotificationCenterProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const [showToast, setShowToast] = useState(false);
   const [latestNotification, setLatestNotification] = useState<Notification | null>(null);
 
@@ -50,37 +53,33 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
     }
   };
 
+  const togglePanel = () => {
+    if (onTogglePanel) {
+      onTogglePanel();
+    } else {
+      setInternalIsOpen(!internalIsOpen);
+    }
+  };
+
   return (
     <>
-      {/* Notification Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center z-40"
-      >
-        <Bell className="w-6 h-6" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
 
       {/* Notification Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] bg-white dark:bg-dark-800 rounded-xl shadow-2xl z-50 animate-slide-up">
+        <div className="fixed top-16 right-4 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-dark-800 rounded-xl shadow-2xl z-50 animate-slide-up">
           <div className="p-4 border-b border-gray-200 dark:border-dark-700 flex items-center justify-between">
             <h3 className="font-bold text-gray-900 dark:text-white">
               Notifications ({unreadCount})
             </h3>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={togglePanel}
               className="p-1 hover:bg-gray-100 dark:hover:bg-dark-700 rounded"
             >
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-[28rem] overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />

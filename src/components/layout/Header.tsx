@@ -1,6 +1,6 @@
 import { UserProfile } from '@/lib/auth';
 import { Page } from '@/types';
-import { Trophy, Home, TrendingUp, History, Crown, User, Shield, Moon, Sun, Menu, X, Target, BarChart3, Lock, LogOut, ChevronRight } from 'lucide-react';
+import { Trophy, Home, TrendingUp, History, Crown, User, Shield, Moon, Sun, Menu, X, Target, BarChart3, Lock, LogOut, ChevronRight, Bell } from 'lucide-react';
 import { useState } from 'react';
 
 interface HeaderProps {
@@ -10,9 +10,11 @@ interface HeaderProps {
   onSignOut: () => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
+  notificationCount?: number;
+  onToggleNotifications?: () => void;
 }
 
-export default function Header({ userProfile, currentPage, onNavigate, onSignOut, darkMode, onToggleDarkMode }: HeaderProps) {
+export default function Header({ userProfile, currentPage, onNavigate, onSignOut, darkMode, onToggleDarkMode, notificationCount = 0, onToggleNotifications }: HeaderProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuSections = [
@@ -54,7 +56,21 @@ export default function Header({ userProfile, currentPage, onNavigate, onSignOut
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Notification Button */}
+            {onToggleNotifications && (
+              <button
+                onClick={onToggleNotifications}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800 text-gray-700 dark:text-gray-300 relative"
+              >
+                <Bell className="w-5 h-5" />
+                {notificationCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {notificationCount > 9 ? '9' : notificationCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* User Info */}
             <div className="hidden sm:flex items-center gap-2">

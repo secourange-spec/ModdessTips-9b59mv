@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { observeNotifications } from '@/lib/database';
 import { User } from 'firebase/auth';
 import { observeAuthState, getCurrentUserProfile } from '@/lib/auth';
 import { UserProfile } from '@/lib/auth';
@@ -22,6 +23,8 @@ function App() {
   const [sectionFilter, setSectionFilter] = useState<'FREE' | 'VIP' | null>(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
     const unsubscribe = observeAuthState(async (user) => {
@@ -39,6 +42,17 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const unsubscribe = observeNotifications(currentUser.uid, (notifications) => {
+      const unreadCount = notifications.filter(n => !n.read).length;
+      setNotificationCount(unreadCount);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   useEffect(() => {
     if (darkMode) {
@@ -90,6 +104,8 @@ function App() {
         onSignOut={handleSignOut}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
+        notificationCount={notificationCount}
+        onToggleNotifications={() => setNotificationsOpen(!notificationsOpen)}
       />
       
       <main className="pt-20 pb-24">
@@ -141,7 +157,13 @@ function App() {
         </div>
       </nav>
 
-      {currentUser && <NotificationCenter userId={currentUser.uid} />}
+      {currentUser && (
+        <NotificationCenter
+          userId={currentUser.uid}
+          isOpen={notificationsOpen}
+          onTogglePanel={() => setNotificationsOpen(!notificationsOpen)}
+        />
+      )}
     </div>
   );
 }
