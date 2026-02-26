@@ -153,9 +153,13 @@ export const createNotification = async (userId: string, message: string, type: 
   return notification;
 };
 
-export const broadcastNotification = async (message: string, type: Notification['type'] = 'info') => {
+export const broadcastNotification = async (message: string, type: Notification['type'] = 'info', vipOnly: boolean = false) => {
   const users = await getAllUsers();
-  const promises = users.map((user: any) => 
+  const filteredUsers = vipOnly 
+    ? users.filter((user: any) => user.vipStatus === true)
+    : users;
+  
+  const promises = filteredUsers.map((user: any) => 
     createNotification(user.uid, message, type)
   );
   await Promise.all(promises);

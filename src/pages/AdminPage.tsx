@@ -14,6 +14,7 @@ export default function AdminPage() {
   const [userFilter, setUserFilter] = useState<'all' | 'vip' | 'free' | 'banned'>('all');
   const [notificationMessage, setNotificationMessage] = useState('');
   const [notificationType, setNotificationType] = useState<'info' | 'success' | 'warning' | 'prediction'>('info');
+  const [notificationTarget, setNotificationTarget] = useState<'all' | 'vip'>('all');
 
   useEffect(() => {
     loadData();
@@ -141,10 +142,15 @@ export default function AdminPage() {
       return;
     }
 
-    if (confirm('Envoyer cette notification à tous les utilisateurs ?')) {
-      await broadcastNotification(notificationMessage, notificationType);
+    const targetCount = notificationTarget === 'vip' 
+      ? users.filter(u => u.vipStatus).length 
+      : users.length;
+    const targetText = notificationTarget === 'vip' ? 'utilisateurs VIP' : 'utilisateurs';
+
+    if (confirm(`Envoyer cette notification à ${targetCount} ${targetText} ?`)) {
+      await broadcastNotification(notificationMessage, notificationType, notificationTarget === 'vip');
       setNotificationMessage('');
-      alert('Notification envoyée à tous les utilisateurs!');
+      alert(`Notification envoyée à ${targetCount} ${targetText}!`);
     }
   };
 
@@ -695,6 +701,19 @@ export default function AdminPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
+                  Destinataires
+                </label>
+                <select
+                  value={notificationTarget}
+                  onChange={(e) => setNotificationTarget(e.target.value as any)}
+                  className="input-field mb-4"
+                >
+                  <option value="all">👥 Tous les utilisateurs ({users.length})</option>
+                  <option value="vip">👑 Utilisateurs VIP uniquement ({users.filter(u => u.vipStatus).length})</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
                   Type de notification
                 </label>
                 <select
@@ -726,7 +745,10 @@ export default function AdminPage() {
                 disabled={!notificationMessage.trim()}
               >
                 <Send className="w-5 h-5" />
-                Envoyer à tous les utilisateurs ({users.length})
+                {notificationTarget === 'vip' 
+                  ? `Envoyer aux utilisateurs VIP (${users.filter(u => u.vipStatus).length})`
+                  : `Envoyer à tous les utilisateurs (${users.length})`
+                }
               </button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { observeNotifications } from '@/lib/database';
 import { User } from 'firebase/auth';
-import { observeAuthState, getCurrentUserProfile } from '@/lib/auth';
+import { observeAuthState, getCurrentUserProfile, signOut } from '@/lib/auth';
 import { UserProfile } from '@/lib/auth';
 import AuthPage from '@/pages/AuthPage';
 import HomePage from '@/pages/HomePage';
@@ -62,7 +62,8 @@ function App() {
     }
   }, [darkMode]);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await signOut();
     setCurrentUser(null);
     setUserProfile(null);
     setCurrentPage('home');

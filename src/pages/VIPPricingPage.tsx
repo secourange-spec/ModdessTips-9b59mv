@@ -54,7 +54,7 @@ export default function VIPPricingPage() {
     };
 
     const message = encodeURIComponent(messages[plan.id as keyof typeof messages]);
-    window.open(`https://t.me/servant12r?text=${message}`, '_blank');
+    window.open(`https://t.me/servant12r?text=${message}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
