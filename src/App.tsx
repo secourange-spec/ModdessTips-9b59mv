@@ -67,7 +67,7 @@ function App() {
       case 'home':
         return <HomePage userProfile={userProfile} onNavigate={setCurrentPage} />;
       case 'predictions':
-        return <PredictionsPage userProfile={userProfile} sectionFilter={sectionFilter} />;
+        return <PredictionsPage userProfile={userProfile} sectionFilter={sectionFilter} onNavigate={setCurrentPage} />;
       case 'history':
         return <HistoryPage userProfile={userProfile} />;
       case 'vip-pricing':

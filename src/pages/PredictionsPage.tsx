@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserProfile } from '@/lib/auth';
-import { Prediction, PredictionCategory } from '@/types';
+import { Prediction, PredictionCategory, Page } from '@/types';
 import { observePredictions } from '@/lib/database';
 import PredictionCard from '@/components/features/PredictionCard';
 import { TrendingUp, Trophy, Target, Crown, Lock, BarChart3 } from 'lucide-react';
@@ -8,9 +8,10 @@ import { TrendingUp, Trophy, Target, Crown, Lock, BarChart3 } from 'lucide-react
 interface PredictionsPageProps {
   userProfile: UserProfile;
   sectionFilter?: 'FREE' | 'VIP' | null;
+  onNavigate: (page: Page) => void;
 }
 
-export default function PredictionsPage({ userProfile, sectionFilter }: PredictionsPageProps) {
+export default function PredictionsPage({ userProfile, sectionFilter, onNavigate }: PredictionsPageProps) {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [selectedSection, setSelectedSection] = useState<PredictionCategory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -188,7 +189,7 @@ export default function PredictionsPage({ userProfile, sectionFilter }: Predicti
                 })}
               </div>
               <button
-                onClick={() => window.location.href = '#'}
+                onClick={() => onNavigate('vip-pricing')}
                 className="btn-primary text-lg px-8 py-4 inline-flex items-center gap-2"
               >
                 <Crown className="w-6 h-6" />
