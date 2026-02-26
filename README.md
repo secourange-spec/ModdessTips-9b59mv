@@ -1,61 +1,151 @@
-# Welcome to your OnSpace project
+# 🏆 MODDESS TIPS
 
-## How can I edit this code?
+Plateforme professionnelle de pronostics sportifs avec système FREE/VIP et tableau de bord administrateur.
 
-There are several ways of editing your application.
+## 🌟 Fonctionnalités
 
-**Use OnSpace**
+### Pour les Utilisateurs
+- **Sections FREE** : Côte 2, Accumulation
+- **Sections VIP** : Côte 2, Côte 5, Score Exact, HT/FT
+- **Historique** : Filtrage par section avec badges
+- **Profil** : Gestion du compte et liens Telegram
+- **Tarifs VIP** : Plans 1 semaine, 1 mois, 3 mois
 
-Simply visit the [OnSpace Project]() and start prompting.
+### Pour les Administrateurs
+- **Gestion des Utilisateurs** : Activation/désactivation VIP, gestion des dates d'expiration, bannissement
+- **Gestion des Pronostics** : Ajout, modification, suppression
+- **Gestion de l'Historique** : Organisation des résultats passés
+- **Notifications** : Diffusion de messages à tous les utilisateurs
+- **Tableau de bord** : Vue d'ensemble complète
 
-Changes made via OnSpace will be committed automatically to this repo.
+## 🛠️ Technologies
 
-**Use your preferred IDE**
+- **Frontend** : React 18.3 + TypeScript + Tailwind CSS
+- **Backend** : Firebase (Auth + Realtime Database)
+- **Build** : Vite 5.4
+- **Icons** : Lucide React
+- **Routing** : React Router DOM
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in OnSpace.
+## 🚀 Démarrage Rapide
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation Locale
 
-Follow these steps:
+```bash
+# Cloner le repository
+git clone https://github.com/votre-username/moddess-tips.git
+cd moddess-tips
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Installer les dépendances
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Créer le fichier .env
+cp .env.example .env
+# Modifiez .env avec vos clés Firebase
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer le serveur de développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Le site sera accessible sur `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Déploiement sur GitHub Pages
 
-**Use GitHub Codespaces**
+Voir le guide complet : [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**Résumé rapide :**
 
-## What technologies are used for this project?
+1. Modifier `vite.config.ts` avec le nom de votre repo
+2. Configurer les secrets Firebase dans GitHub Settings
+3. Activer GitHub Pages (Source: GitHub Actions)
+4. Push sur `main` → déploiement automatique
 
-This project is built with:
+## 📁 Structure du Projet
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── components/
+│   ├── features/       # Composants métier
+│   └── layout/         # Composants de mise en page
+├── lib/
+│   ├── auth.ts         # Gestion authentification
+│   ├── database.ts     # Opérations Firebase
+│   └── firebase.ts     # Configuration Firebase
+├── pages/
+│   ├── AdminPage.tsx
+│   ├── AuthPage.tsx
+│   ├── HistoryPage.tsx
+│   ├── HomePage.tsx
+│   ├── PredictionsPage.tsx
+│   ├── ProfilePage.tsx
+│   └── VIPPricingPage.tsx
+└── types/
+    └── index.ts        # Types TypeScript
+```
 
-## How can I deploy this project?
+## 🔑 Variables d'Environnement
 
-Simply open [OnSpace]() and click on Share -> Publish.
+Créez un fichier `.env` à la racine avec :
+
+```env
+VITE_FIREBASE_API_KEY=votre_api_key
+VITE_FIREBASE_AUTH_DOMAIN=votre-projet.firebaseapp.com
+VITE_FIREBASE_DATABASE_URL=https://votre-projet.firebaseio.com
+VITE_FIREBASE_PROJECT_ID=votre-projet
+VITE_FIREBASE_STORAGE_BUCKET=votre-projet.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
+VITE_FIREBASE_APP_ID=votre_app_id
+VITE_FIREBASE_MEASUREMENT_ID=votre_measurement_id
+```
+
+## 👤 Compte Admin
+
+Pour accéder au panneau admin, l'email de l'utilisateur doit être `admin@moddess.com` ou configuré dans `src/lib/auth.ts`.
+
+## 🔗 Liens Telegram
+
+- **Contact Admin** : https://t.me/servant12r
+- **Canal VIP** : https://t.me/+EBiGK5As8NQ1MjI0
+
+## 📝 Scripts Disponibles
+
+```bash
+npm run dev          # Serveur de développement
+npm run build        # Build de production
+npm run preview      # Prévisualiser le build
+npm run lint         # Vérifier le code
+```
+
+## 🔒 Sécurité Firebase
+
+Les clés Firebase sont stockées dans :
+- **Local** : fichier `.env` (git-ignoré)
+- **GitHub Actions** : GitHub Secrets
+- **Fallback** : valeurs par défaut dans `firebase.ts` (pour compatibilité OnSpace)
+
+## 📱 Responsive Design
+
+Le site est entièrement responsive :
+- 📱 Mobile first
+- 💻 Tablette optimisé
+- 🖥️ Desktop avec layout étendu
+
+## 🎨 Thème
+
+- Mode clair / sombre
+- Palette de couleurs personnalisée
+- Animations fluides
+- Design moderne et professionnel
+
+## 📄 Licence
+
+Tous droits réservés © 2025 MODDESS TIPS
+
+## 🤝 Support
+
+Pour toute question ou problème :
+- Telegram : [@servant12r](https://t.me/servant12r)
+- GitHub Issues : [Créer une issue](https://github.com/votre-username/moddess-tips/issues)
+
+---
+
+Développé avec ❤️ pour la communauté des parieurs sportifs
