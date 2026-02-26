@@ -7,9 +7,10 @@ import { TrendingUp, Trophy, Target, Crown, Lock, BarChart3 } from 'lucide-react
 
 interface PredictionsPageProps {
   userProfile: UserProfile;
+  sectionFilter?: 'FREE' | 'VIP' | null;
 }
 
-export default function PredictionsPage({ userProfile }: PredictionsPageProps) {
+export default function PredictionsPage({ userProfile, sectionFilter }: PredictionsPageProps) {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [selectedSection, setSelectedSection] = useState<PredictionCategory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,6 +113,7 @@ export default function PredictionsPage({ userProfile }: PredictionsPageProps) {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* FREE Section */}
+      {(!sectionFilter || sectionFilter === 'FREE') && (
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
           <span className="badge-free text-base px-4 py-2">GRATUIT</span>
@@ -150,8 +152,10 @@ export default function PredictionsPage({ userProfile }: PredictionsPageProps) {
           })}
         </div>
       </div>
+      )}
 
       {/* VIP Section */}
+      {(!sectionFilter || sectionFilter === 'VIP') && (
       <div>
         <div className="flex items-center gap-3 mb-6">
           <span className="badge-vip text-base px-4 py-2">VIP PREMIUM</span>
@@ -228,6 +232,7 @@ export default function PredictionsPage({ userProfile }: PredictionsPageProps) {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

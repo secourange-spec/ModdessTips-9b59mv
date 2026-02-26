@@ -19,6 +19,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [sectionFilter, setSectionFilter] = useState<'FREE' | 'VIP' | null>(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -66,7 +67,7 @@ function App() {
       case 'home':
         return <HomePage userProfile={userProfile} onNavigate={setCurrentPage} />;
       case 'predictions':
-        return <PredictionsPage userProfile={userProfile} />;
+        return <PredictionsPage userProfile={userProfile} sectionFilter={sectionFilter} />;
       case 'history':
         return <HistoryPage userProfile={userProfile} />;
       case 'vip-pricing':
@@ -99,9 +100,12 @@ function App() {
       <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-800 shadow-2xl z-40">
         <div className="grid grid-cols-3 max-w-md mx-auto">
           <button
-            onClick={() => setCurrentPage('predictions')}
+            onClick={() => {
+              setSectionFilter('FREE');
+              setCurrentPage('predictions');
+            }}
             className={`flex flex-col items-center justify-center py-3 transition-colors ${
-              currentPage === 'predictions'
+              currentPage === 'predictions' && sectionFilter === 'FREE'
                 ? 'text-green-500'
                 : 'text-gray-600 dark:text-gray-400 hover:text-green-500'
             }`}
@@ -110,9 +114,12 @@ function App() {
             <span className="text-xs font-semibold">FREE</span>
           </button>
           <button
-            onClick={() => setCurrentPage('predictions')}
+            onClick={() => {
+              setSectionFilter('VIP');
+              setCurrentPage('predictions');
+            }}
             className={`flex flex-col items-center justify-center py-3 transition-colors ${
-              currentPage === 'predictions'
+              currentPage === 'predictions' && sectionFilter === 'VIP'
                 ? 'text-primary-500'
                 : 'text-gray-600 dark:text-gray-400 hover:text-primary-500'
             }`}
